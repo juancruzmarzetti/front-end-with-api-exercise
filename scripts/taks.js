@@ -17,15 +17,19 @@ window.addEventListener('load', function () {
     "authorization": `${jwtLogin}`
     }
   };
-  //const settingsTarea = {};
+
   let nombreUsuario = "";
   let apellidoUsuario = "";
   let arrayTareas = [];
+  let arrayTareasPendientes = [];
   let arrayTareasFinalizadas = [];
   const usernameP = document.getElementById("username");
   const formCrearTarea = document.getElementById("form-crear-tarea");
   const inputDescripcion = document.getElementById("nuevaTarea");
   const listaTareasPendientes = document.getElementById("tareas-pendientes");
+  const listaTareasFinalizadas = document.getElementById("tareas-finalizadas");
+  const cantidadTareasFinalizadas = document.getElementById("cantidad-finalizadas");
+  let contadorTareasFinalizadas = 0;
 
 
   /* -------------------------------------------------------------------------- */
@@ -60,6 +64,17 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
   /*                 FUNCIÓN 3 - Obtener listado de tareas [GET]                */
   /* -------------------------------------------------------------------------- */
+  function dividirTareas(arrayADividir){
+    arrayADividir.forEach(tarea => {
+      console.log("dividiendo");
+      if(tarea.completed == false){
+        arrayTareasPendientes.push(tarea);
+      }else if(tarea.completed == true){
+        arrayTareasFinalizadas.push(tarea);
+      };
+    });
+  };
+
 
   function consultarTareas() {
     fetch(`${url}/tasks`, settings)
@@ -67,8 +82,9 @@ window.addEventListener('load', function () {
       return response.json();
    }).then(function(data){
       arrayTareas = data;
-      renderizarTareas(arrayTareas);
-      // aca si hay tareas se tendrían que actualizar en mis-tareas.html.
+      dividirTareas(arrayTareas);
+      renderizarTareasPendientes();
+      renderizarTareasFinalizadas();
    }).catch(function(error){
       console.log(error);
    });
@@ -98,8 +114,8 @@ window.addEventListener('load', function () {
     .then(function(response){
       return response.json();
     }).then(function(data){
-      arrayTareas.push(data);
-      renderizarTareas(arrayTareas);
+      arrayTareasPendientes.push(data);
+      renderizarTareasPendientes();
     }).catch(function(error){
       console.log(error);
     })
@@ -109,10 +125,26 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
   /*                  FUNCIÓN 5 - Renderizar tareas en pantalla                 */
   /* -------------------------------------------------------------------------- */
-  function renderizarTareas(listado) {
+  function renderizarTareasFinalizadas(){
+    listaTareasFinalizadas.innerHTML = "";
+    contadorTareasFinalizadas = 0;
+    arrayTareasFinalizadas.forEach(tarea => {
+      console.log("renderizando finalizadas");
+      contadorTareasFinalizadas++;
+      listaTareasFinalizadas.innerHTML += `
+      <li class="tarea descripcion" id="${tarea.id}">
+        <p>${tarea.description}</p>
+        <button>Eliminar tarea</button>
+      </li>
+      `;
+    });
+    cantidadTareasFinalizadas.innerText = contadorTareasFinalizadas;
+  }
+
+  function renderizarTareasPendientes() {
     listaTareasPendientes.innerHTML = "";
-    listado.forEach(tarea => {
-      //console.log(tarea);
+    arrayTareasPendientes.forEach(tarea => {
+      console.log("renderizando pendientes");
       listaTareasPendientes.innerHTML += `
       <li class="tarea descripcion" id="${tarea.id}">
         <p>${tarea.description}</p>
@@ -129,11 +161,11 @@ window.addEventListener('load', function () {
 
   
   function eliminarTareaPorId(idAEliminar){
-    const index = arrayTareas.findIndex((x) => x.id === idAEliminar);
-    if(index !== -1){
-    arrayTareas.splice(index, 1);
-    renderizarTareas(arrayTareas);
-  }
+    let indexAEliminar = arrayTareasPendientes.findIndex(x => x.id === idAEliminar);
+    if(indexAEliminar !== -1){
+    arrayTareasPendientes.splice(indexAEliminar, 1);
+    };
+    renderizarTareasPendientes();
   };
 
   function botonesCambioEstado(idTarea) {
@@ -154,6 +186,7 @@ window.addEventListener('load', function () {
       return response.json();
     }).then(function(data){
       arrayTareasFinalizadas.push(data);
+      renderizarTareasFinalizadas();
     }).catch(function(error){
       console.log(error);
     });
@@ -167,8 +200,6 @@ window.addEventListener('load', function () {
         if(textoBoton === "Cambiar a finalizada"){
           botonesCambioEstado(liTarea.id);
           eliminarTareaPorId(parseInt(liTarea.id));
-          console.log(arrayTareas);
-          console.log(arrayTareasFinalizadas);
         }else if(textoBoton === "Eliminar tarea"){
           //aca iria la eliminacion de la tarea
           console.log("eliminando");
