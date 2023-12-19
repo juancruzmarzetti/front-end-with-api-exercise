@@ -129,7 +129,6 @@ window.addEventListener('load', function () {
     listaTareasFinalizadas.innerHTML = "";
     contadorTareasFinalizadas = 0;
     arrayTareasFinalizadas.forEach(tarea => {
-      console.log("renderizando finalizadas");
       contadorTareasFinalizadas++;
       listaTareasFinalizadas.innerHTML += `
       <li class="tarea descripcion" id="${tarea.id}">
@@ -144,7 +143,6 @@ window.addEventListener('load', function () {
   function renderizarTareasPendientes() {
     listaTareasPendientes.innerHTML = "";
     arrayTareasPendientes.forEach(tarea => {
-      console.log("renderizando pendientes");
       listaTareasPendientes.innerHTML += `
       <li class="tarea descripcion" id="${tarea.id}">
         <p>${tarea.description}</p>
@@ -201,8 +199,7 @@ window.addEventListener('load', function () {
           botonesCambioEstado(liTarea.id);
           eliminarTareaPorId(parseInt(liTarea.id));
         }else if(textoBoton === "Eliminar tarea"){
-          //aca iria la eliminacion de la tarea
-          console.log("eliminando");
+          botonBorrarTarea(liTarea.id);
         }
       }
     }
@@ -212,11 +209,48 @@ window.addEventListener('load', function () {
   /* -------------------------------------------------------------------------- */
   /*                     FUNCIÓN 7 - Eliminar tarea [DELETE]                    */
   /* -------------------------------------------------------------------------- */
-  function botonBorrarTarea() {
-   
-    
-
-    
-
+  function deleteTarea(idDelete){
+    let indexToDelete = arrayTareasPendientes.findIndex(x => x.id === idDelete);
+    if(indexToDelete !== -1){
+      arrayTareasPendientes.splice(indexToDelete, 1);
+      renderizarTareasPendientes();
+    }else if(indexToDelete === -1){
+      indexToDelete = arrayTareasFinalizadas.findIndex(y => y.id === idDelete);
+      arrayTareasFinalizadas.splice(indexToDelete, 1);
+      renderizarTareasFinalizadas();
+    };
   };
+
+  function botonBorrarTarea(idTareaDelete) {
+    console.log("id tarea delete: ");
+    console.log(idTareaDelete);
+    const settingsDelete = {
+      method:"DELETE",
+      headers: {
+      "Content-Type": "application/json",
+      "authorization": `${jwtLogin}`
+      }
+    };
+    fetch(`${url}/tasks/${idTareaDelete}`, settingsDelete)
+    .then(function(response){
+      return response.json();
+    }).then(function(data){
+      deleteTarea(idTareaDelete);
+    }).catch(function(error){
+      console.log(error);
+    });
+  };
+
+  listaTareasFinalizadas.addEventListener("click", function(event){
+    if(event.target.tagName === 'BUTTON'){
+      let liTareaDelete = event.target.closest(".tarea");
+      if(liTareaDelete){
+        let textoBoton = event.target.textContent.trim();
+        if(textoBoton === "Eliminar tarea"){
+          console.log(liTareaDelete.id);
+          botonBorrarTarea(parseInt(liTareaDelete.id));
+        };
+      };
+    };
+  });
 });
