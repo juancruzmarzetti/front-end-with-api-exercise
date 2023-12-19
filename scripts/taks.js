@@ -199,7 +199,7 @@ window.addEventListener('load', function () {
           botonesCambioEstado(liTarea.id);
           eliminarTareaPorId(parseInt(liTarea.id));
         }else if(textoBoton === "Eliminar tarea"){
-          botonBorrarTarea(liTarea.id);
+          botonBorrarTarea(parseInt(liTarea.id));
         }
       }
     }
@@ -222,8 +222,6 @@ window.addEventListener('load', function () {
   };
 
   function botonBorrarTarea(idTareaDelete) {
-    console.log("id tarea delete: ");
-    console.log(idTareaDelete);
     const settingsDelete = {
       method:"DELETE",
       headers: {
@@ -247,7 +245,6 @@ window.addEventListener('load', function () {
       if(liTareaDelete){
         let textoBoton = event.target.textContent.trim();
         if(textoBoton === "Eliminar tarea"){
-          console.log(liTareaDelete.id);
           botonBorrarTarea(parseInt(liTareaDelete.id));
         };
       };
