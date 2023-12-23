@@ -1,7 +1,8 @@
+
 /* ---------------------------------- texto --------------------------------- */
 function noTieneNumeros(texto){
     const numeros = "0123456789";
-    for(i = 0; i < 10; i++){
+    for(let i = 0; i < 10; i++){
         if(texto.includes(numeros[i])){
             return false;
         };
@@ -11,7 +12,7 @@ function noTieneNumeros(texto){
 
 function siTieneLetras(texto){
     const letras = "abcdefghijqklmnñopqrstuvwxyz";
-    for(i = 0; i < letras.length; i++){
+    for(let i = 0; i < letras.length; i++){
         if(texto.includes(letras[i])){
             return true;
         };
@@ -19,12 +20,12 @@ function siTieneLetras(texto){
     return false;
 }
 
-function validarTexto(texto){
+export function validarTexto(texto){
     if(noTieneNumeros(texto) && siTieneLetras(texto)) return true;
     return false;
 }
 
-function normalizarTexto(texto) {
+export function normalizarTexto(texto) {
     let temp = texto.trim();
     let temp2 = temp.split(" ");
     let temp3 = "";
@@ -37,31 +38,30 @@ function normalizarTexto(texto) {
 }
 
 /* ---------------------------------- email --------------------------------- */
-function validarEmail(email) {
+export function validarEmail(email) {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return regex.test(email);
 };
 
-function normalizarEmail(email) {
+/*function normalizarEmail(email) {
     normalizarTexto(email);
-}
+}*/
 
 /* -------------------------------- password -------------------------------- */
-function validarContrasenia(contrasenia) {
-    if(noTieneNumeros(constrasenia)){
-        alert("La contraseña debe contener al menos un número");
-        return false;
-    }else if(contrasenia.length >= 8 && noTieneNumeros(contrasenia) === false){
+export function validarContrasenia(contrasenia) {
+    if(contrasenia.length >= 8 && noTieneNumeros(contrasenia) === false){
         return true;
+    }else if(noTieneNumeros(contrasenia)){
+        return false;
     }else if(contrasenia.length < 8){
-        alert("La contraseña debe contener al menos 8 caracteres");
         return false;
     }else{
         return false;
     }
 }
 
-function compararContrasenias(contrasenia_1, contrasenia_2) {
+export function compararContrasenias(contrasenia_1, contrasenia_2) {
     if(contrasenia_1 === contrasenia_2) return true;
+    return false;
 }
 
