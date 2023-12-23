@@ -42,6 +42,7 @@ window.addEventListener('load', function () {
             }
         }).catch(function(error){
             console.log("Error: " + error);
+            alert("Email o contraseña incorrectos");
         });
     };
 });
